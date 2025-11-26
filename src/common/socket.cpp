@@ -73,7 +73,7 @@ ssize_t Socket::receive_packet(std::vector<char> &buffer) const
 int Socket::configure(const Subnet &target_subnet) const
 {
     // Apply subnet filter
-    if (this-apply_subnet_bpf_filter(target_subnet) < 0) {
+    if (this->apply_subnet_bpf_filter(target_subnet) < 0) {
         this->error_stream << "ERROR: failed to apply BPF filter." << std::endl;     // TODO: change to warning???
         return -1;
     }
