@@ -1,24 +1,16 @@
 CPP = g++
 STD = c++14
 CPPFLAGS = -Wall -g3 --std=$(STD) -pthread
-CPPFLAGS += -Isrc/common
+CPPFLAGS += -Isrc
 INSTALL_DIR = /usr/bin
 
 # IMPORTANT: Each target to be listed here
 PING_SUBNET = ping_subnet
-PING_SUBNET_GUI = ping_subnet_gui
 TARGETS = \
 	$(PING_SUBNET) \
-	$(PING_SUBNET_GUI) \
 
 # IMPORTANT: Each target needs to have a similar variable: [target_name]_DEPS
-$(PING_SUBNET)_DEPS = $(filter %.o, $(patsubst src/%.cpp, build/$(PING_SUBNET)/%.o, $(wildcard src/$(PING_SUBNET)/* src/common/*)))
-$(PING_SUBNET)_CPPFLAGS += -Isrc/$(PING_SUBNET)
-
-$(PING_SUBNET_GUI)_DEPS = $(filter %.o, $(patsubst src/%.cpp, build/$(PING_SUBNET_GUI)/%.o, $(wildcard src/$(PING_SUBNET_GUI)/* src/common/*)))
-$(PING_SUBNET_GUI)_CPPFLAGS += -D__GUI__
-$(PING_SUBNET_GUI)_CPPFLAGS += `wx-config --cxxflags` `wx-config --libs`
-$(PING_SUBNET_GUI)_CPPFLAGS += -Isrc/$(PING_SUBNET_GUI)
+$(PING_SUBNET)_DEPS = $(filter %.o, $(patsubst src/%.cpp, build/%.o, $(wildcard src/*)))
 
 .PHONY: all clean install uninstall
 
@@ -27,17 +19,17 @@ all: $(TARGETS)
 # Generate target-specific rules.
 define BUILD_TARGET
 
-$(1): build/$(1)/bin/$(1)
+$(1): build/$(1)
 
-build/$(1)/bin/$(1): $$($(1)_DEPS)
+build/$(1): $$($(1)_DEPS)
 	@echo "\n------Finishing build for [$(1)]------"
 	@mkdir -p $$(dir $$@)
-	$(CPP) $$^ -o $$@ $(CPPFLAGS) $$($(1)_CPPFLAGS)
+	$(CPP) $$^ -o $$@ $(CPPFLAGS)
 
-build/$(1)/%.o: $$(addprefix src/, %.cpp %.h)
+build/%.o: $$(addprefix src/, %.cpp %.h)
 	@echo "\n------Building $$(notdir $$<) for [$(1)]------"
 	@mkdir -p $$(dir $$@)
-	$(CPP) -c $$< -o $$@ $(CPPFLAGS) $$($(1)_CPPFLAGS)
+	$(CPP) -c $$< -o $$@ $(CPPFLAGS)
 
 endef
 # WARNING: dont add space after BUILD_TARGET's comma otherwise everything will break!
@@ -47,7 +39,7 @@ clean:
 	rm -rf build
 
 # Install / uninstall.
-BINARIES = $(foreach TARGET, $(TARGETS), $(wildcard build/$(TARGET)/bin/*))
+BINARIES = $(foreach TARGET, $(TARGETS), $(wildcard build/$(TARGET)))
 install: $(addprefix install_, $(BINARIES))
 uninstall: $(addprefix uninstall_, $(BINARIES))
 
