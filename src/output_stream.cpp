@@ -1,3 +1,14 @@
+ /*
+ * This file is part of ping_subnet utility.
+ * 
+ * © 2025 WTFPL – Do What the Fuck You Want to Public License.
+ * Learn more: https://www.wtfpl.net
+ * 
+ * Developed by Full Tilt Embedded:
+ *      https://github.com/fulltiltembedded
+ *      https://fulltiltembedded.com
+ */
+
 #include "output_stream.h"
 #ifdef __GUI__
     // Because in wxwidgets the form can only be updated from the main thread, and this thing is most likely running in a parallel thread,
